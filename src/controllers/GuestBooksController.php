@@ -3,8 +3,6 @@
 require (__DIR__.'/../gateways/GuestBooksGateway.php');
 require (__DIR__.'/BaseController.php');
 
-$BAD_REQUEST_STATUS_CODE_HEADER = '';
-
 class GuestBooksController extends BaseController{
 
     private $connetion = null;
@@ -37,8 +35,6 @@ class GuestBooksController extends BaseController{
     }
 
     public function getAllBooks() {
-        global $OK_STATUS_CODE_HEADER;
-
         $result = $this->gateway->findAll();
         
         return $this->okResponse(json_encode($result));
