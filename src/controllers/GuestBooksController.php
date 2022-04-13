@@ -17,7 +17,7 @@ class GuestBooksController extends BaseController{
         $this->gateway = new GuestBooksGateway($connection);
 
         $this->mapper = array(
-            'GET' => function() { return $this->getAllBooks(); },
+            'GET' => function() { return $this->getBooks(); },
             'POST' => function() { return $this->addBook(); },
             'PUT' => function() { return $this->updateBook(); },
             'DELETE' => function() { return $this->deleteBook(); }
@@ -34,8 +34,15 @@ class GuestBooksController extends BaseController{
         }
     }
 
-    public function getAllBooks() {
-        $result = $this->gateway->findAll();
+    public function getBooks() {
+        if (isset($_GET["id"])) {
+            $result = $this->gateway->find($_GET["id"]);
+            return $this->okResponse(json_encode($result));
+        }
+
+        $search = $_GET["search"];
+        $page = $_GET["page"];
+        $result = $this->gateway->getPage($page, $search);
         
         return $this->okResponse(json_encode($result));
     }

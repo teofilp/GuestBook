@@ -18,17 +18,34 @@ class GuestBooksGateway {
         }
     }
 
-    public function getPage($page, $pageSize) {
-        $statement = "SELECT * FROM GuestBooks LIMIT :limit OFFSET :offset;";
+    public function getPage($page, $search, $pageSize = 4) {
+        $statement = "SELECT * FROM GuestBooks WHERE Author LIKE :search OR Title LIKE :search LIMIT :limit OFFSET :offset;";
+        $selectAllStatement = "SELECT * FROM GuestBooks WHERE Author LIKE :search OR Title LIKE :search";
+
         $offset = ($page - 1) * $pageSize;
+
+        $search = "%" . $search . "%";
 
         try {
             $statement = $this->connection->prepare($statement);
             $statement->bindParam('limit', $pageSize, PDO::PARAM_INT);
             $statement->bindParam('offset', $offset, PDO::PARAM_INT);
+            $statement->bindParam("search", $search);
             $statement->execute();
 
-            return $statement->fetchAll(PDO::FETCH_ASSOC);
+            $items = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            $selectAllStatement = $this->connection->prepare($selectAllStatement);
+            $selectAllStatement->bindParam("search", $search);
+            $selectAllStatement->execute();
+
+            $count = $selectAllStatement->rowCount();
+            $pages = max(1, intval($count / $pageSize + ($count % $pageSize != 0 ? 1 : 0)));
+
+            return [
+                "items" => $items,
+                "pages" => $pages
+            ];
         } catch(PDOException $e) {
             exit($e->getMessage());
         }
