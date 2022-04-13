@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GuestBook - Login</title>
+    <link rel="stylesheet" href="../common/common.css" />
+  </head>
+  <body>
+    <div id="panel-container">
+      <div id="left-panel">
+        <img id="logo" src="../assets/logo.png" alt="" />
+      </div>
+      <div id="right-panel">
+        <h1>Edit record</h1>
+        <div class="form-item">
+          <label for="email">Author</label>
+          <input type="email" id="author" name="email" />
+        </div>
+        <div class="form-item">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title" />
+        </div>
+        <div class="form-item">
+          <label for="description">Description</label>
+          <textarea name="description" id="description" rows="5"></textarea>
+        </div>
+        <button class="submit" onclick="handleUpdate()">Update</button>
+      </div>
+    </div>
+    <script src="../common/common.js"></script>
+    <script>
+      if (!getCookie("userId")) window.location = "../login";
+
+      const getFields = () => {
+        const author = document.getElementById("author");
+        const title = document.getElementById("title");
+        const description = document.getElementById("description");
+
+        return {
+          author,
+          title,
+          description,
+        };
+      };
+
+      const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+      });
+
+      const getRecord = (id) => {
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            const { Author, Title, Comment } = JSON.parse(this.responseText);
+            const { author, title, description } = getFields();
+
+            author.value = Author;
+            title.value = Title;
+            description.value = Comment;
+          }
+        };
+
+        xhttp.open("GET", `/guest-book/GuestBooks.php?id=${id}`);
+        xhttp.send();
+      };
+
+      getRecord(params.id);
+
+      const handleUpdate = () => {
+        const { author, title, description } = getFields();
+
+        if (!author.value) return alert("author is required");
+        if (!validateEmail(author.value))
+          return alert("author must be a valid email");
+        if (!title.value) return alert("title is required");
+        if (!description.value) return alert("description is required");
+
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status === 200) {
+            alert("Record updated successfully");
+            location.reload();
+          }
+        };
+
+        xhttp.open("PUT", "/guest-book/GuestBooks.php");
+        xhttp.setRequestHeader(
+          "Content-Type",
+          "application/json;charset=UTF-8"
+        );
+
+        xhttp.send(
+          JSON.stringify({
+            id: params.id,
+            author: author.value,
+            title: title.value,
+            comment: description.value,
+          })
+        );
+      };
+    </script>
+  </body>
+</html>
