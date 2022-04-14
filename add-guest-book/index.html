@@ -13,6 +13,11 @@
         <img id="logo" src="../assets/logo.png" alt="" />
       </div>
       <div id="right-panel">
+        <ion-icon
+          id="login-icon"
+          name="person-circle-outline"
+          onclick="goToLogin()"
+        ></ion-icon>
         <h1>Add new record</h1>
         <div class="form-item">
           <label for="email">Author</label>
@@ -29,6 +34,14 @@
         <button class="submit" onclick="handleSubmit()">Create</button>
       </div>
     </div>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
     <script src="../common/common.js"></script>
     <script>
       const handleSubmit = () => {

@@ -81,6 +81,8 @@ const fetchItems = () => {
       const { items, pages } = data;
 
       pagination.pages = pages;
+      pagination.currentPage =
+        pagination.currentPage > pages ? pages : pagination.currentPage;
 
       const itemsHTML = getItemsAsHTML(items);
 

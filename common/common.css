@@ -89,3 +89,14 @@ button.submit {
   color: white;
   border-radius: 4px;
 }
+
+#login-icon,
+#logout-icon {
+  width: 32px;
+  height: 32px;
+  color: black;
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  cursor: pointer;
+}
